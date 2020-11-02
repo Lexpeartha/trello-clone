@@ -1,8 +1,15 @@
 import { createStore } from "vuex";
+import defaultBoard from "../default-board";
 
-export default createStore({
-  state: {},
+const board = JSON.parse(localStorage.getItem("board")) || defaultBoard;
+
+const store = createStore({
+  state: {
+    board
+  },
   mutations: {},
   actions: {},
   modules: {}
 });
+
+export default store;
