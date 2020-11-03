@@ -7,19 +7,19 @@ export default {
       name: "todo",
       tasks: [
         {
-          description: "",
+          description: "First task description",
           name: "first task",
           id: generateUid(),
           userAssigned: null
         },
         {
-          description: "",
+          description: "Second task description",
           name: "second task",
           id: generateUid(),
           userAssigned: null
         },
         {
-          description: "",
+          description: "Third task description",
           name: "and thrid",
           id: generateUid(),
           userAssigned: null

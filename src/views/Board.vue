@@ -4,6 +4,9 @@
       <div
         class="column"
         :key="$columnIndex"
+        @drop="moveTask($event, column.tasks)"
+        @dragover.prevent="$event.preventDefault()"
+        @dragenter.prevent="$event.preventDefault()"
         v-for="(column, $columnIndex) in board.columns"
       >
         <div class="flex-center items-center mb-2 font-bold">
@@ -12,6 +15,8 @@
         <div class="list-reset">
           <div
             @click="goToTask(task)"
+            draggable="true"
+            @dragstart="pickupTask($event, $taskIndex, $columnIndex)"
             class="task"
             :key="$taskIndex"
             v-for="(task, $taskIndex) in column.tasks"
@@ -25,12 +30,21 @@
             </p>
           </div>
         </div>
+
+        <input
+          type="text"
+          class="block p-2 w-full bg-transparent"
+          @keyup.enter="createTask($event, column.tasks)"
+          placeholder="+ Enter new task"
+        />
       </div>
     </div>
 
     <div
       class="task-bg"
       @click.self="close"
+      @keyup.esc="close"
+      :tabindex="this.$route.params.id"
       v-if="isTaskOpen"
     >
       <router-view />
@@ -55,6 +69,42 @@ export default {
     },
     close() {
       this.$router.push({ name: "Board" });
+    },
+    closeByEsc(event) {
+      if (event.which == 27) this.close();
+    },
+    createTask(event, tasksList) {
+      this.$store.dispatch("createNewTask", {
+        tasks: tasksList,
+        name: event.target.value
+      });
+      event.target.value = "";
+    },
+    pickupTask(event, taskIndex, fromColumnIndex) {
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.dropEffect = "move";
+
+      event.dataTransfer.setData("task-index", taskIndex);
+      event.dataTransfer.setData("from-column-index", fromColumnIndex);
+    },
+    moveTask(event, toTasks) {
+      let fromColumnIndex = event.dataTransfer.getData("from-column-index");
+      let fromTasks = this.board.columns[fromColumnIndex].tasks;
+      let taskIndex = event.dataTransfer.getData("task-index");
+
+
+      this.$store.dispatch("moveTask", {
+        fromTasks,
+        toTasks,
+        taskIndex
+      });
+    }
+  },
+  watch: {
+    isTaskOpen() {
+      if (this.isTaskOpen === false)
+        window.removeEventListener("keyup", this.closeByEsc);
+      else window.addEventListener("keyup", this.closeByEsc);
     }
   }
 };
