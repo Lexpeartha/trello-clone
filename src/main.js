@@ -7,8 +7,9 @@ import "./assets/tailwind.css";
 import AppButton from "@/components/AppButton.vue";
 
 const app = createApp(App)
+  .component("AppButton", AppButton)
   .use(store)
   .use(router)
   .mount("#app");
 
-app.component("AppButton", AppButton);
+export default app;
