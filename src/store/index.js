@@ -10,6 +10,20 @@ const store = createStore({
   state: {
     board
   },
+  getters: {
+    getTask(state) {
+      return uid => {
+        for (const column of state.board.columns) {
+          for (const task of column.tasks) {
+            console.log("Searching tasks...");
+            if (task.id == uid) {
+              return task;
+            }
+          }
+        }
+      };
+    }
+  },
   mutations: {},
   actions: {},
   modules: {}
