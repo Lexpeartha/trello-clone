@@ -19,6 +19,11 @@
             @click="goToTask(task)"
             draggable="true"
             @dragstart="pickupTask($event, $taskIndex, $columnIndex)"
+            @dragover.prevent="$event.preventDefault()"
+            @dragenter.prevent="$event.preventDefault()"
+            @drop.stop="
+              moveTaskOrColumn($event, column.tasks, $columnIndex, $taskIndex)
+            "
             class="task"
             :key="$taskIndex"
             v-for="(task, $taskIndex) in column.tasks"
@@ -98,7 +103,7 @@ export default {
       event.dataTransfer.effectAllowed = "move";
       event.dataTransfer.dropEffect = "move";
 
-      event.dataTransfer.setData("task-index", taskIndex);
+      event.dataTransfer.setData("from-task-index", taskIndex);
       event.dataTransfer.setData("from-column-index", fromColumnIndex);
       event.dataTransfer.setData("type", "task");
     },
@@ -112,38 +117,53 @@ export default {
     },
     /* Method that recognizes what object is being dragged (task or column),
     and executes code for moving that object off of that */
-    moveTaskOrColumn(event, toTasks, toColumnIndex) {
+    moveTaskOrColumn(event, toTasks, toColumnIndex, toTaskIndex) {
       const type = event.dataTransfer.getData("type");
       switch (type) {
         case "task": {
-          /* Extracts info so that we can feed it into the action, so vuex
-          can remove task from the column we dragged it from, and add it to
-          desired column */
-          let fromColumnIndex = event.dataTransfer.getData("from-column-index");
-          let fromTasks = this.board.columns[fromColumnIndex].tasks;
-          let taskIndex = event.dataTransfer.getData("task-index");
-
-          this.$store.dispatch("moveTask", {
-            fromTasks,
+          this.moveTask(
+            event,
             toTasks,
-            taskIndex
-          });
+            toTaskIndex !== undefined ? toTaskIndex : toTasks.length
+          );
           break;
         }
         case "column": {
-          /* Gets column index, and dispatches action to move column to desired place */
-          let fromColumnIndex = event.dataTransfer.getData("from-column-index");
-
-          this.$store.dispatch("moveColumn", {
-            fromColumnIndex,
-            toColumnIndex
-          });
+          this.moveColumn(event, toColumnIndex);
           break;
         }
         default: {
+          /* This default case shouldn't ever be triggered, but leaving it here regardless */
+          console.log(
+            "If you got this message in console, then you did something wrong!"
+          );
           break;
         }
       }
+    },
+    moveTask(event, toTasks, toTaskIndex) {
+      /* Extracts info so that we can feed it into the action, so vuex
+      can remove task from the column we dragged it from, and add it to
+      desired column */
+      let fromColumnIndex = event.dataTransfer.getData("from-column-index");
+      let fromTasks = this.board.columns[fromColumnIndex].tasks;
+      let fromTaskIndex = event.dataTransfer.getData("from-task-index");
+
+      this.$store.dispatch("moveTask", {
+        fromTasks,
+        fromTaskIndex,
+        toTasks,
+        toTaskIndex
+      });
+    },
+    moveColumn(event, toColumnIndex) {
+      /* Gets column index, and dispatches action to move column to desired place */
+      let fromColumnIndex = event.dataTransfer.getData("from-column-index");
+
+      this.$store.dispatch("moveColumn", {
+        fromColumnIndex,
+        toColumnIndex
+      });
     }
   },
   watch: {
@@ -165,14 +185,17 @@ export default {
   @apply flex items-center flex-wrap shadow mb-2 py-2 px-2 rounded bg-white text-grey-darkest no-underline;
 }
 .column {
-  @apply bg-grey-light p-3 mr-5 text-left shadow rounded;
+  @apply bg-red-lighter p-3 mr-5 text-left shadow rounded;
   min-width: 350px;
 }
 .board {
-  @apply p-4 bg-teal-dark h-full overflow-auto;
+  @apply p-4 bg-red-dark h-full overflow-auto;
 }
 .task-bg {
   @apply absolute top-0 left-0 h-screen w-screen;
   background: rgba(0, 0, 0, 0.5);
+}
+::placeholder {
+  color: rgb(61, 72, 82);
 }
 </style>
