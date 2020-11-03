@@ -38,6 +38,12 @@ const store = createStore({
     MOVE_TASK(state, { fromTasks, toTasks, taskIndex }) {
       const taskToMove = fromTasks.splice(taskIndex, 1)[0];
       toTasks.push(taskToMove);
+    },
+    MOVE_COLUMN(state, { fromColumnIndex, toColumnIndex }) {
+      const columnList = state.board.columns;
+      const columnToMove = columnList.splice(fromColumnIndex, 1)[0];
+
+      columnList.splice(toColumnIndex, 0, columnToMove);
     }
   },
   actions: {
@@ -59,6 +65,12 @@ const store = createStore({
         fromTasks,
         toTasks,
         taskIndex
+      });
+    },
+    moveColumn({ commit }, { fromColumnIndex, toColumnIndex }) {
+      commit("MOVE_COLUMN", {
+        fromColumnIndex,
+        toColumnIndex
       });
     }
   },
