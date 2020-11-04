@@ -45,6 +45,17 @@
           placeholder="+ Enter new task"
         />
       </div>
+
+      <div class="column flex">
+        <input
+          type="text"
+          placeholder="+ Enter new column"
+          class="block p-2 w-full flex-grow bg-transparent"
+          name="columnName"
+          @keyup.enter="createColumn"
+          v-model="newColumnName"
+        />
+      </div>
     </div>
 
     <div
@@ -65,6 +76,11 @@ import { mapState } from "vuex";
 
 export default {
   name: "Board",
+  data() {
+    return {
+      newColumnName: ""
+    };
+  },
   computed: {
     /* Computed for telling us whether or not task model should be open,
     by checking if the route points to the route used for showing task */
@@ -96,6 +112,12 @@ export default {
       });
       event.target.value = "";
     },
+    createColumn() {
+      this.$store.dispatch("createNewColumn", {
+        name: this.newColumnName
+      });
+      this.newColumnName = "";
+    },
     /* Method that initializes the proccess of dragging a task, first it
     sets it's effects to "move", and then it gives data to the event object
     needed later down the dragging proccess */
@@ -124,6 +146,9 @@ export default {
           this.moveTask(
             event,
             toTasks,
+            /* Checks whether toTaskIndex is provided, if it isn't (that means it wasn't
+            dragged directly onto another task) then it will add it to the end of column  */
+
             toTaskIndex !== undefined ? toTaskIndex : toTasks.length
           );
           break;

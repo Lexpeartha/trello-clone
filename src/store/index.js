@@ -32,6 +32,12 @@ const store = createStore({
         description: ""
       });
     },
+    CREATE_COLUMN(state, { name }) {
+      state.board.columns.push({
+        name,
+        tasks: []
+      });
+    },
     UPDATE_TASK(state, { task, key, value }) {
       task[key] = value;
     },
@@ -50,6 +56,11 @@ const store = createStore({
     createNewTask({ commit }, { tasks, name }) {
       commit("CREATE_TASK", {
         tasks,
+        name
+      });
+    },
+    createNewColumn({ commit }, { name }) {
+      commit("CREATE_COLUMN", {
         name
       });
     },
