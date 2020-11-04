@@ -1,51 +1,13 @@
 <template>
   <div class="board">
     <div class="flex flex-row items-start">
-      <div
-        class="column"
-        draggable="true"
-        @drop="moveTaskOrColumn($event, column.tasks, $columnIndex)"
-        @dragstart.self="pickupColumn($event, $columnIndex)"
-        @dragover.prevent="$event.preventDefault()"
-        @dragenter.prevent="$event.preventDefault()"
+      <BoardColumn
         v-for="(column, $columnIndex) in board.columns"
         :key="$columnIndex"
-      >
-        <div class="flex-center items-center mb-2 font-bold">
-          {{ column.name }}
-        </div>
-        <div class="list-reset">
-          <div
-            @click="goToTask(task)"
-            draggable="true"
-            @dragstart="pickupTask($event, $taskIndex, $columnIndex)"
-            @dragover.prevent="$event.preventDefault()"
-            @dragenter.prevent="$event.preventDefault()"
-            @drop.stop="
-              moveTaskOrColumn($event, column.tasks, $columnIndex, $taskIndex)
-            "
-            class="task"
-            :key="$taskIndex"
-            v-for="(task, $taskIndex) in column.tasks"
-          >
-            <span class="w-full flex-shrink-0 font-bold">{{ task.name }}</span>
-            <p
-              v-if="task.description"
-              class="w-full mt-1 flex-shrink-0 text-sm"
-            >
-              {{ task.description }}
-            </p>
-          </div>
-        </div>
-
-        <input
-          type="text"
-          class="block p-2 w-full bg-transparent"
-          @keyup.enter="createTask($event, column.tasks)"
-          placeholder="+ Enter new task"
-        />
-      </div>
-
+        :column="column"
+        :column-index="$columnIndex"
+        :board="board"
+      />
       <div class="column flex">
         <input
           type="text"
@@ -73,6 +35,7 @@
 <script>
 /*  JAVASCRIPT FOR BOARD VIEW  */
 import { mapState } from "vuex";
+import TheColumn from "@/components/TheColumn.vue";
 
 export default {
   name: "Board",
@@ -80,6 +43,9 @@ export default {
     return {
       newColumnName: ""
     };
+  },
+  components: {
+    BoardColumn: TheColumn
   },
   computed: {
     /* Computed for telling us whether or not task model should be open,
@@ -90,10 +56,6 @@ export default {
     ...mapState(["board"])
   },
   methods: {
-    /* Navigates router to the route for a task with specific ID */
-    goToTask(task) {
-      this.$router.push({ name: "Task", params: { id: task.id } });
-    },
     /* Navigates router back to the board */
     close() {
       this.$router.push({ name: "Board" });
@@ -103,92 +65,11 @@ export default {
     closeByEsc(event) {
       if (event.which == 27) this.close();
     },
-    /* Dispatches an action that creates a new task from the inputted name,
-    and resets field's value to empty afterwards */
-    createTask(event, tasksList) {
-      this.$store.dispatch("createNewTask", {
-        tasks: tasksList,
-        name: event.target.value
-      });
-      event.target.value = "";
-    },
     createColumn() {
       this.$store.dispatch("createNewColumn", {
         name: this.newColumnName
       });
       this.newColumnName = "";
-    },
-    /* Method that initializes the proccess of dragging a task, first it
-    sets it's effects to "move", and then it gives data to the event object
-    needed later down the dragging proccess */
-    pickupTask(event, taskIndex, fromColumnIndex) {
-      event.dataTransfer.effectAllowed = "move";
-      event.dataTransfer.dropEffect = "move";
-
-      event.dataTransfer.setData("from-task-index", taskIndex);
-      event.dataTransfer.setData("from-column-index", fromColumnIndex);
-      event.dataTransfer.setData("type", "task");
-    },
-    /* Same as for the method above, except this one is for columns specifically */
-    pickupColumn(event, fromColumnIndex) {
-      event.dataTransfer.effectAllowed = "move";
-      event.dataTransfer.dropEffect = "move";
-
-      event.dataTransfer.setData("from-column-index", fromColumnIndex);
-      event.dataTransfer.setData("type", "column");
-    },
-    /* Method that recognizes what object is being dragged (task or column),
-    and executes code for moving that object off of that */
-    moveTaskOrColumn(event, toTasks, toColumnIndex, toTaskIndex) {
-      const type = event.dataTransfer.getData("type");
-      switch (type) {
-        case "task": {
-          this.moveTask(
-            event,
-            toTasks,
-            /* Checks whether toTaskIndex is provided, if it isn't (that means it wasn't
-            dragged directly onto another task) then it will add it to the end of column  */
-
-            toTaskIndex !== undefined ? toTaskIndex : toTasks.length
-          );
-          break;
-        }
-        case "column": {
-          this.moveColumn(event, toColumnIndex);
-          break;
-        }
-        default: {
-          /* This default case shouldn't ever be triggered, but leaving it here regardless */
-          console.log(
-            "If you got this message in console, then you did something wrong!"
-          );
-          break;
-        }
-      }
-    },
-    moveTask(event, toTasks, toTaskIndex) {
-      /* Extracts info so that we can feed it into the action, so vuex
-      can remove task from the column we dragged it from, and add it to
-      desired column */
-      let fromColumnIndex = event.dataTransfer.getData("from-column-index");
-      let fromTasks = this.board.columns[fromColumnIndex].tasks;
-      let fromTaskIndex = event.dataTransfer.getData("from-task-index");
-
-      this.$store.dispatch("moveTask", {
-        fromTasks,
-        fromTaskIndex,
-        toTasks,
-        toTaskIndex
-      });
-    },
-    moveColumn(event, toColumnIndex) {
-      /* Gets column index, and dispatches action to move column to desired place */
-      let fromColumnIndex = event.dataTransfer.getData("from-column-index");
-
-      this.$store.dispatch("moveColumn", {
-        fromColumnIndex,
-        toColumnIndex
-      });
     }
   },
   watch: {

@@ -20,7 +20,7 @@ export default {
         case "danger":
           return "bg-red";
         default:
-          return "bg-teal";
+          return "bg-red-dark";
       }
     });
 
