@@ -19,9 +19,11 @@
 
 <script>
 import { mapGetters } from "vuex";
+import movingTasksAndColumnsMixin from "@/mixins/movingTasksAndColumnsMixin.js";
 
 export default {
   name: "Task",
+  mixins: [movingTasksAndColumnsMixin],
   computed: {
     ...mapGetters(["getTask"]),
     task() {

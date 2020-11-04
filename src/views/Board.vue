@@ -1,5 +1,8 @@
 <template>
   <div class="board">
+    <h1 class="text-3xl text-justify text-red-lighter bold mb-2 ">
+      {{ board.name }}
+    </h1>
     <div class="flex flex-row items-start">
       <BoardColumn
         v-for="(column, $columnIndex) in board.columns"
