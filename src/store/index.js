@@ -47,7 +47,7 @@ const store = createStore({
           ) {
             if (columns[columnIndex].tasks[taskIndex].id == task.id) {
               return {
-                column: columns[columnIndex],
+                columnIndex,
                 taskIndex
               };
             }
@@ -83,8 +83,8 @@ const store = createStore({
 
       columnList.splice(toColumnIndex, 0, columnToMove);
     },
-    REMOVE_TASK(state, { column, taskindex }) {
-      column.tasks.splice(taskindex, 1);
+    REMOVE_TASK(state, { columnIndex, taskIndex }) {
+      state.board.columns[columnIndex].tasks.splice(taskIndex, 1);
     },
     REMOVE_COLUMN(state, { columnIndex }) {
       state.board.columns.splice(columnIndex, 1);
@@ -132,7 +132,7 @@ const store = createStore({
       let taskData = getters.getTaskData(task);
 
       commit("REMOVE_TASK", {
-        column: taskData.column,
+        columnIndex: taskData.columnIndex,
         taskIndex: taskData.taskIndex
       });
     }
