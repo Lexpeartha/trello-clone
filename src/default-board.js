@@ -4,49 +4,42 @@ export default {
   name: "Trello Workshop Clone",
   columns: [
     {
-      name: "todo",
+      name: "To-do column",
       tasks: [
         {
-          description: "First task description",
-          name: "first task",
+          description: "First to-do",
+          name: "First task",
           id: generateUid(),
           userAssigned: null
         },
         {
-          description: "Second task description",
-          name: "second task",
+          description: "Second to-do",
+          name: "Second task",
           id: generateUid(),
           userAssigned: null
         },
         {
-          description: "Third task description",
-          name: "and thrid",
+          description: "Third to-do",
+          name: "Third task",
           id: generateUid(),
           userAssigned: null
         }
       ]
     },
     {
-      name: "in-progress",
+      name: "Currently doing",
       tasks: [
         {
-          description: "",
-          name: "first task",
+          description: "Web development seems so interesting!",
+          name: "Learning web development",
           id: generateUid(),
           userAssigned: null
         }
       ]
     },
     {
-      name: "done",
-      tasks: [
-        {
-          description: "",
-          name: "first task",
-          id: generateUid(),
-          userAssigned: null
-        }
-      ]
+      name: "Done",
+      tasks: []
     }
   ]
 };

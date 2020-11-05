@@ -15,9 +15,41 @@ const store = createStore({
       return uid => {
         for (const column of state.board.columns) {
           for (const task of column.tasks) {
-            console.log("Searching tasks...");
             if (task.id == uid) {
               return task;
+            }
+          }
+        }
+      };
+    },
+    getTaskData(state) {
+      return task => {
+        /*
+        for (const column of state.board.columns) {
+          column.tasks.forEach((t, tIndex) => {
+            if (task.id === t.id)
+              return {
+                column,
+                taskIndex: tIndex
+              };
+          });
+        } */
+
+        // This is actually really bad way to find task data needed, but other solutions
+        // I came up with didn't work, and for now this is going to stay the way
+        // we retrieve needed data about task
+        const columns = state.board.columns;
+        for (let columnIndex = 0; columnIndex < columns.length; columnIndex++) {
+          for (
+            let taskIndex = 0;
+            taskIndex < columns[columnIndex].tasks.length;
+            taskIndex++
+          ) {
+            if (columns[columnIndex].tasks[taskIndex].id == task.id) {
+              return {
+                column: columns[columnIndex],
+                taskIndex
+              };
             }
           }
         }
@@ -51,10 +83,9 @@ const store = createStore({
 
       columnList.splice(toColumnIndex, 0, columnToMove);
     },
-    /*
-    REMOVE_TASK(state, { fromColumn, taskIndex }) {
-
-    }, */
+    REMOVE_TASK(state, { column, taskindex }) {
+      column.tasks.splice(taskindex, 1);
+    },
     REMOVE_COLUMN(state, { columnIndex }) {
       state.board.columns.splice(columnIndex, 1);
     }
@@ -95,6 +126,14 @@ const store = createStore({
     removeColumn({ commit }, { columnIndex }) {
       commit("REMOVE_COLUMN", {
         columnIndex
+      });
+    },
+    removeTask({ commit, getters }, { task }) {
+      let taskData = getters.getTaskData(task);
+
+      commit("REMOVE_TASK", {
+        column: taskData.column,
+        taskIndex: taskData.taskIndex
       });
     }
   },

@@ -9,7 +9,12 @@
     >
       <div class="flex items-center mb-4">
         <span class="flex-grow font-bold">{{ column.name }}</span>
-        <box-icon id="trash" color="#2c3e50" @click="removeColumn(columnIndex)" name="trash" />
+        <box-icon
+          id="trash"
+          color="#2c3e50"
+          @click="removeColumn(columnIndex)"
+          name="trash"
+        />
       </div>
       <div class="list-reset">
         <BoardTask
