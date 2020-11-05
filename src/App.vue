@@ -19,6 +19,9 @@ html {
   color: #2c3e50;
   height: 100%;
 }
+#trash {
+  cursor: pointer;
+}
 .container {
   @apply mx-auto;
 }

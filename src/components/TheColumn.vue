@@ -9,7 +9,7 @@
     >
       <div class="flex items-center mb-4">
         <span class="flex-grow font-bold">{{ column.name }}</span>
-        <box-icon @click="removeColumn(columnIndex)" name="trash"></box-icon>
+        <box-icon id="trash" color="#2c3e50" @click="removeColumn(columnIndex)" name="trash" />
       </div>
       <div class="list-reset">
         <BoardTask
@@ -56,14 +56,6 @@ export default {
         name: event.target.value
       });
       event.target.value = "";
-    },
-    /* Same as for the method above, except this one is for columns specifically */
-    pickupColumn(event, fromColumnIndex) {
-      event.dataTransfer.effectAllowed = "move";
-      event.dataTransfer.dropEffect = "move";
-
-      event.dataTransfer.setData("from-column-index", fromColumnIndex);
-      event.dataTransfer.setData("type", "column");
     },
     removeColumn(columnIndex) {
       if (
