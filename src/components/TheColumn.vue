@@ -1,44 +1,49 @@
 <template>
-  <div
-    class="column"
-    draggable="true"
-    @drop="moveTaskOrColumn($event, column.tasks, columnIndex)"
-    @dragstart.self="pickupColumn($event, columnIndex)"
-    @dragover.prevent="$event.preventDefault()"
-    @dragenter.prevent="$event.preventDefault()"
-  >
-    <div class="flex-center items-center mb-2 font-bold">
-      {{ column.name }}
-    </div>
-    <div class="list-reset">
-      <BoardTask
-        v-for="(task, $taskIndex) in column.tasks"
-        :key="$taskIndex"
-        :task="task"
-        :task-index="$taskIndex"
-        :board="board"
-        :column="column"
-        :column-index="columnIndex"
-      />
-    </div>
+  <AppDrop @drop="moveTaskOrColumn">
+    <AppDrag
+      class="column"
+      :transfer-data="{
+        type: 'column',
+        fromColumnIndex: columnIndex
+      }"
+    >
+      <div class="flex-center items-center mb-2 font-bold">
+        {{ column.name }}
+      </div>
+      <div class="list-reset">
+        <BoardTask
+          v-for="(task, $taskIndex) in column.tasks"
+          :key="$taskIndex"
+          :task="task"
+          :task-index="$taskIndex"
+          :board="board"
+          :column="column"
+          :column-index="columnIndex"
+        />
+      </div>
 
-    <input
-      type="text"
-      class="block p-2 w-full bg-transparent"
-      @keyup.enter="createTask($event, column.tasks)"
-      placeholder="+ Enter new task"
-    />
-  </div>
+      <input
+        type="text"
+        class="block p-2 w-full bg-transparent"
+        @keyup.enter="createTask($event, column.tasks)"
+        placeholder="+ Enter new task"
+      />
+    </AppDrag>
+  </AppDrop>
 </template>
 
 <script>
 import TheTask from "@/components/TheTask.vue";
+import AppDrag from "@/components/AppDrag.vue";
+import AppDrop from "@/components/AppDrop.vue";
 import movingTasksAndColumnsMixin from "@/mixins/movingTasksAndColumnsMixin.js";
 
 export default {
   name: "TheColumn",
   components: {
-    BoardTask: TheTask
+    BoardTask: TheTask,
+    AppDrag,
+    AppDrop
   },
   mixins: [movingTasksAndColumnsMixin],
   methods: {
