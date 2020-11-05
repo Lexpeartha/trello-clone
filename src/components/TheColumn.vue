@@ -7,8 +7,9 @@
         fromColumnIndex: columnIndex
       }"
     >
-      <div class="flex-center items-center mb-2 font-bold">
-        {{ column.name }}
+      <div class="flex items-center mb-4">
+        <span class="flex-grow font-bold">{{ column.name }}</span>
+        <box-icon @click="removeColumn(columnIndex)" name="trash"></box-icon>
       </div>
       <div class="list-reset">
         <BoardTask
@@ -63,6 +64,17 @@ export default {
 
       event.dataTransfer.setData("from-column-index", fromColumnIndex);
       event.dataTransfer.setData("type", "column");
+    },
+    removeColumn(columnIndex) {
+      if (
+        confirm(
+          "If you delete this column, all it's tasks will be lost, do you wish to procceed?"
+        )
+      ) {
+        this.$store.dispatch("removeColumn", {
+          columnIndex
+        });
+      }
     }
   }
 };

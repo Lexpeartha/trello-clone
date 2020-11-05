@@ -50,6 +50,13 @@ const store = createStore({
       const columnToMove = columnList.splice(fromColumnIndex, 1)[0];
 
       columnList.splice(toColumnIndex, 0, columnToMove);
+    },
+    /*
+    REMOVE_TASK(state, { fromColumn, taskIndex }) {
+
+    }, */
+    REMOVE_COLUMN(state, { columnIndex }) {
+      state.board.columns.splice(columnIndex, 1);
     }
   },
   actions: {
@@ -83,6 +90,11 @@ const store = createStore({
       commit("MOVE_COLUMN", {
         fromColumnIndex,
         toColumnIndex
+      });
+    },
+    removeColumn({ commit }, { columnIndex }) {
+      commit("REMOVE_COLUMN", {
+        columnIndex
       });
     }
   },
